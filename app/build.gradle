@@ -31,17 +31,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
     buildFeatures {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.3.2'
+        kotlinCompilerExtensionVersion '1.4.8'
     }
     packagingOptions {
         resources {
@@ -87,7 +87,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.1'
 
     // core splashscreen
-    implementation 'androidx.core:core-splashscreen:1.1.0'
+    implementation 'androidx.core:core-splashscreen:1.0.1'
 
     // MongoDB Realm
     implementation('org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2') {
@@ -97,7 +97,7 @@ dependencies {
     }
 
     // Realm library sync
-    implementation 'io.realm.kotlin:library-sync:11.2.2'
+    implementation 'io.realm.kotlin:library-sync:1.10.0'
 
     // Dagger Hilt
     implementation 'com.google.dagger:hilt-android:2.47'
@@ -111,19 +111,21 @@ dependencies {
     implementation 'io.coil-kt:coil-compose:2.4.0'
 
     // Pager - Accompanist
-    implementation 'com.google.accompanist:accompanist-pager:0.21.0'
+    implementation 'com.google.accompanist:accompanist-pager:0.25.1'
 
     // Date time picker
     implementation 'io.github.vanpra.compose-material-dialogs:datetime:0.9.0'
 
     // Message bar compose
-    implementation 'com.github.stevdza-san:MessageBarCompose:1.0.0'
+    implementation 'com.github.stevdza-san:MessageBarCompose:1.0.5'
 
     // One tap compose
     implementation 'com.github.stevdza-san:OneTapCompose:1.0.0'
 
     // Desugar JDK
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+}
 
-
+kapt {
+    correctErrorTypes = true
 }
