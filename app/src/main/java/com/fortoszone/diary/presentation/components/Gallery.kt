@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
@@ -61,9 +62,9 @@ fun Gallery(
                         .build(),
                     contentDescription = "Gallery image"
                 )
-            }
+                Spacer(modifier = Modifier.width(spaceBetween))
 
-            Spacer(modifier = Modifier.size(spaceBetween))
+            }
 
             if (remainingImages.value > 0) {
                 LastImageOverlay(

@@ -1,8 +1,10 @@
 package com.fortoszone.diary.navigation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,12 +17,15 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.fortoszone.diary.data.repository.MongoDB
 import com.fortoszone.diary.presentation.components.DisplayAlertDialog
 import com.fortoszone.diary.presentation.screens.auth.AuthenticationScreen
 import com.fortoszone.diary.presentation.screens.auth.AuthenticationViewModel
 import com.fortoszone.diary.presentation.screens.home.HomeScreen
+import com.fortoszone.diary.presentation.screens.home.HomeViewModel
 import com.fortoszone.diary.util.Constants.APP_ID
 import com.fortoszone.diary.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
+import com.fortoszone.diary.util.RequestState
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import io.realm.kotlin.mongodb.App
@@ -28,8 +33,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SetupNavGraph(startDestination: String, navController: NavHostController) {
+fun SetupNavGraph(
+    startDestination: String,
+    navController: NavHostController,
+    onDataLoaded: () -> Unit
+) {
     NavHost(
         startDestination = startDestination,
         navController = navController
@@ -38,7 +48,8 @@ fun SetupNavGraph(startDestination: String, navController: NavHostController) {
             navigateToHome = {
                 navController.popBackStack()
                 navController.navigate(Screen.home.route)
-            }
+            },
+            onDataLoaded = onDataLoaded
         )
         homeRoute(
             navigateToWrite = {
@@ -47,14 +58,16 @@ fun SetupNavGraph(startDestination: String, navController: NavHostController) {
             navigateToAuth = {
                 navController.popBackStack()
                 navController.navigate(Screen.authentification.route)
-            }
+            },
+            onDataLoaded = onDataLoaded
         )
         writeRoute()
     }
 }
 
 fun NavGraphBuilder.authenticationRoute(
-    navigateToHome: () -> Unit = {}
+    navigateToHome: () -> Unit,
+    onDataLoaded: () -> Unit
 ) {
     composable(route = Screen.authentification.route) {
         val viewModel: AuthenticationViewModel = viewModel()
@@ -62,6 +75,10 @@ fun NavGraphBuilder.authenticationRoute(
         val oneTapState = rememberOneTapSignInState()
         val messageBarState = rememberMessageBarState()
         val authenticated by viewModel.authenticated
+
+        LaunchedEffect(key1 = Unit) {
+            onDataLoaded()
+        }
 
         AuthenticationScreen(
             loadingState = loadingState,
@@ -95,16 +112,27 @@ fun NavGraphBuilder.authenticationRoute(
     }
 }
 
+@ExperimentalFoundationApi
 fun NavGraphBuilder.homeRoute(
     navigateToWrite: () -> Unit,
-    navigateToAuth: () -> Unit
+    navigateToAuth: () -> Unit,
+    onDataLoaded: () -> Unit
 ) {
     composable(route = Screen.home.route) {
+        val viewModel: HomeViewModel = viewModel()
+        val diaries by viewModel.diaries
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
         var onSignOutDialogOpened by remember {
             mutableStateOf(false)
         }
+
+        LaunchedEffect(key1 = diaries) {
+            if (diaries !is RequestState.Loading) {
+                onDataLoaded()
+            }
+        }
+
         HomeScreen(
             onMenuClicked = {
                 scope.launch {
@@ -118,7 +146,12 @@ fun NavGraphBuilder.homeRoute(
             onSignOutClicked = {
                 onSignOutDialogOpened = true
             },
+            diaries = diaries
         )
+
+        LaunchedEffect(key1 = Unit) {
+            MongoDB.configureRealm()
+        }
 
         DisplayAlertDialog(
             title = "Sign out",

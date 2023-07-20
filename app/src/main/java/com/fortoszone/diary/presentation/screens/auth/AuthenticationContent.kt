@@ -60,7 +60,7 @@ fun AuthenticationContent(
                     style = TextStyle(
                         fontSize = MaterialTheme.typography.bodyMedium.fontSize
                     ),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
             }
 
