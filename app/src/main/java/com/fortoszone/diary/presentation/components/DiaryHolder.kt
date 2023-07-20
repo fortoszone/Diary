@@ -1,6 +1,7 @@
 package com.fortoszone.diary.presentation.components
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +39,7 @@ import com.fortoszone.diary.model.Diary
 import com.fortoszone.diary.model.Mood
 import com.fortoszone.diary.ui.theme.Elevation
 import com.fortoszone.diary.util.toInstant
+import io.realm.kotlin.ext.realmListOf
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Date
@@ -48,6 +51,7 @@ fun DiaryHolder(
 ) {
     val localDensity = LocalDensity.current
     var componentHeight by remember { mutableStateOf(0.dp) }
+    var galleryOpened by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -97,6 +101,22 @@ fun DiaryHolder(
                     maxLines = 4,
                     overflow = TextOverflow.Ellipsis,
                 )
+
+                if (diary.images.isNotEmpty()) {
+                    ShowGalleryButton(
+                        galleryOpened = galleryOpened,
+                        onClick = { galleryOpened = !galleryOpened }
+                    )
+                }
+
+                AnimatedVisibility(visible = galleryOpened) {
+                    Column(
+                        modifier = Modifier
+                            .padding(14.dp)
+                    ) {
+                        Gallery(images = diary.images)
+                    }
+                }
             }
         }
     }
@@ -151,6 +171,21 @@ fun DiaryHeader(
 }
 
 @Composable
+fun ShowGalleryButton(
+    galleryOpened: Boolean,
+    onClick: () -> Unit
+) {
+    TextButton(onClick = onClick) {
+        Text(
+            text = if (galleryOpened) "Hide Gallery" else "Show Gallery",
+            style = TextStyle(
+                fontSize = MaterialTheme.typography.bodySmall.fontSize
+            )
+        )
+    }
+}
+
+@Composable
 @Preview
 fun DiaryHolderPreview() {
     DiaryHolder(
@@ -159,6 +194,7 @@ fun DiaryHolderPreview() {
             title = "This is a sample title"
             description =
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget aliquam ultricies, nisl nisl aliquam nisl, eget aliquam nisl nisl eget."
+            images = realmListOf("", "")
         },
 
         onClick = {}
