@@ -3,5 +3,6 @@
     <string name="google_logo">Google Logo</string>
     <string name="auth_title">Sign in with Google</string>
     <string name="auth_body">Please sign in to continue</string>
+    <string name="sign_out">Sign out</string>
 
 </resources>
