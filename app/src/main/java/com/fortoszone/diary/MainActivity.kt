@@ -10,11 +10,13 @@ import com.fortoszone.diary.navigation.Screen
 import com.fortoszone.diary.navigation.SetupNavGraph
 import com.fortoszone.diary.ui.theme.DiaryTheme
 import com.fortoszone.diary.util.Constants.APP_ID
+import com.google.accompanist.pager.ExperimentalPagerApi
 import io.realm.kotlin.mongodb.App
 
 class MainActivity : ComponentActivity() {
     var keepSplashScreen = true
 
+    @OptIn(ExperimentalPagerApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen().setKeepOnScreenCondition { keepSplashScreen }
@@ -37,9 +39,9 @@ class MainActivity : ComponentActivity() {
     private fun getStartDestination(): String {
         val user = App.create(APP_ID).currentUser
         return if (user == null) {
-            Screen.authentification.route
+            Screen.Authentication.route
         } else {
-            Screen.home.route
+            Screen.Home.route
         }
     }
 }
