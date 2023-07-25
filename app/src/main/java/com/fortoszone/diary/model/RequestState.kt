@@ -1,4 +1,4 @@
-package com.fortoszone.diary.util
+package com.fortoszone.diary.model
 
 sealed class RequestState<out T> {
     object Idle : RequestState<Nothing>()

@@ -1,7 +1,7 @@
 package com.fortoszone.diary.data.repository
 
 import com.fortoszone.diary.model.Diary
-import com.fortoszone.diary.util.RequestState
+import com.fortoszone.diary.model.RequestState
 import kotlinx.coroutines.flow.Flow
 import org.mongodb.kbson.ObjectId
 import java.time.LocalDate

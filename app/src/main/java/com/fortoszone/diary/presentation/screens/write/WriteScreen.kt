@@ -1,10 +1,13 @@
 package com.fortoszone.diary.presentation.screens.write
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.fortoszone.diary.model.Diary
+import com.fortoszone.diary.model.GalleryImage
+import com.fortoszone.diary.model.GalleryState
 import com.fortoszone.diary.model.Mood
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
@@ -22,9 +25,12 @@ fun WriteScreen(
     onDescriptionChanged: (String) -> Unit,
     moodName: () -> String,
     onSaveClicked: (Diary) -> Unit,
-    onDateTimeUpdated: (ZonedDateTime) -> Unit
+    onDateTimeUpdated: (ZonedDateTime) -> Unit,
+    galleryState: GalleryState,
+    onImageSelected: (Uri) -> Unit,
+    onImageClicked: (GalleryImage) -> Unit,
 
-) {
+    ) {
     LaunchedEffect(key1 = uiState.mood) {
         pagerState.scrollToPage(Mood.valueOf(uiState.mood.name).ordinal)
     }
@@ -48,7 +54,10 @@ fun WriteScreen(
                 onTitleChanged = onTitleChanged,
                 description = uiState.description,
                 onDescriptionChanged = onDescriptionChanged,
-                onSaveClicked = onSaveClicked
+                onSaveClicked = onSaveClicked,
+                galleryState = galleryState,
+                onImageSelected = onImageSelected,
+                onImageClicked = onImageClicked
             )
         }
     )

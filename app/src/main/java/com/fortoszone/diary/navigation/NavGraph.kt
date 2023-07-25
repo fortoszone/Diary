@@ -23,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.fortoszone.diary.data.repository.MongoDB
 import com.fortoszone.diary.model.Mood
+import com.fortoszone.diary.model.RequestState
 import com.fortoszone.diary.presentation.components.DisplayAlertDialog
 import com.fortoszone.diary.presentation.screens.auth.AuthenticationScreen
 import com.fortoszone.diary.presentation.screens.auth.AuthenticationViewModel
@@ -32,7 +33,6 @@ import com.fortoszone.diary.presentation.screens.write.WriteScreen
 import com.fortoszone.diary.presentation.screens.write.WriteViewModel
 import com.fortoszone.diary.util.Constants.APP_ID
 import com.fortoszone.diary.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
-import com.fortoszone.diary.util.RequestState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.stevdzasan.messagebar.rememberMessageBarState
@@ -42,7 +42,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SetupNavGraph(
     startDestination: String,
@@ -107,9 +107,9 @@ fun NavGraphBuilder.authenticationRoute(
             onDialogDismissed = {
                 messageBarState.addSuccess(it)
             },
-            onTokenIdReceived = {
+            onSuccessfulFirebaseSignIn = { tokenId ->
                 viewModel.login(
-                    tokenId = it,
+                    tokenId = tokenId,
                     onSuccess = {
                         viewModel.setLoadingState(false)
                         navigateToHome()
@@ -120,10 +120,14 @@ fun NavGraphBuilder.authenticationRoute(
                     }
                 )
             },
+            onFailedFirebaseSignIn = {
+                messageBarState.addError(it)
+                viewModel.setLoadingState(false)
+            },
             authenticated = authenticated,
             navigateToHome = {
                 navigateToHome()
-            }
+            },
         )
     }
 }
@@ -210,6 +214,7 @@ fun NavGraphBuilder.writeRoute(
         val pagerState = rememberPagerState()
         val pageNumber by remember { derivedStateOf { pagerState.currentPage } }
         val context = LocalContext.current
+        val galleryState = viewModel.galleryState
 
         WriteScreen(
             onBackPressed = onBackPressed,
@@ -240,7 +245,16 @@ fun NavGraphBuilder.writeRoute(
                     onError = {}
                 )
             },
-            onDateTimeUpdated = { viewModel.updateDateTime(zonedDateTime = it) }
+            onDateTimeUpdated = { viewModel.updateDateTime(zonedDateTime = it) },
+            galleryState = galleryState,
+            onImageSelected = {
+                val type = context.contentResolver.getType(it)?.split("/")?.last() ?: ".jpg"
+                viewModel.addImage(
+                    image = it,
+                    imageType = type
+                )
+            },
+            onImageClicked = {}
         )
     }
 }

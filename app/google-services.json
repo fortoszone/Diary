@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "611379629090",
+    "project_id": "diary-393106",
+    "storage_bucket": "diary-393106.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:611379629090:android:7bf3c8d949bc708acb0e7b",
+        "android_client_info": {
+          "package_name": "com.fortoszone.diary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "611379629090-ihigu3gor4ihs99dmqenv6vprt3fp467.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmtj_StOvma1wzlUgYfHhh8HqA2L3OHw0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "611379629090-ihigu3gor4ihs99dmqenv6vprt3fp467.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

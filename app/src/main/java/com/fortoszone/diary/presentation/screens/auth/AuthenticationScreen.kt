@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.fortoszone.diary.util.Constants.CLIENT_ID
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.stevdzasan.messagebar.ContentWithMessageBar
 import com.stevdzasan.messagebar.MessageBarState
 import com.stevdzasan.onetap.OneTapSignInState
@@ -20,7 +22,8 @@ fun AuthenticationScreen(
     oneTapState: OneTapSignInState,
     loadingState: Boolean,
     messageBarState: MessageBarState,
-    onTokenIdReceived: (String) -> Unit,
+    onSuccessfulFirebaseSignIn: (String) -> Unit,
+    onFailedFirebaseSignIn: (Exception) -> Unit,
     onDialogDismissed: (String) -> Unit,
     authenticated: Boolean,
     onButtonClicked: () -> Unit,
@@ -46,8 +49,16 @@ fun AuthenticationScreen(
     OneTapSignInWithGoogle(
         state = oneTapState,
         clientId = CLIENT_ID,
-        onTokenIdReceived = {
-            onTokenIdReceived(it)
+        onTokenIdReceived = { tokenId ->
+            val credential = GoogleAuthProvider.getCredential(tokenId, null)
+            FirebaseAuth.getInstance().signInWithCredential(credential)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        onSuccessfulFirebaseSignIn(tokenId)
+                    } else {
+                        onFailedFirebaseSignIn(it.exception!!)
+                    }
+                }
         },
         onDialogDismissed = {
             Log.d("OneTapSignIn", "Dialog   dismissed")

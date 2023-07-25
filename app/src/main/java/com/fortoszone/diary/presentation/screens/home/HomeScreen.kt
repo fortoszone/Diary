@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.fortoszone.diary.R
 import com.fortoszone.diary.data.repository.Diaries
-import com.fortoszone.diary.util.RequestState
+import com.fortoszone.diary.model.RequestState
 
 @ExperimentalMaterial3Api
 @ExperimentalFoundationApi

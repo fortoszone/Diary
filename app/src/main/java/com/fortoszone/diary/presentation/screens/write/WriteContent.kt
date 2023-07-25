@@ -1,5 +1,6 @@
 package com.fortoszone.diary.presentation.screens.write
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
@@ -36,13 +36,16 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.fortoszone.diary.model.Diary
+import com.fortoszone.diary.model.GalleryImage
+import com.fortoszone.diary.model.GalleryState
 import com.fortoszone.diary.model.Mood
+import com.fortoszone.diary.presentation.components.GalleryUploader
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
+import io.realm.kotlin.ext.toRealmList
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalPagerApi
 @Composable
 fun WriteContent(
@@ -53,7 +56,10 @@ fun WriteContent(
     onTitleChanged: (String) -> Unit,
     description: String,
     onDescriptionChanged: (String) -> Unit,
-    onSaveClicked: (Diary) -> Unit
+    onSaveClicked: (Diary) -> Unit,
+    galleryState: GalleryState,
+    onImageSelected: (Uri) -> Unit,
+    onImageClicked: (GalleryImage) -> Unit
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -103,8 +109,10 @@ fun WriteContent(
                 modifier = Modifier.fillMaxWidth(),
                 value = title,
                 onValueChange = onTitleChanged,
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Unspecified,
                     unfocusedIndicatorColor = Color.Unspecified,
                     disabledIndicatorColor = Color.Unspecified,
@@ -131,8 +139,10 @@ fun WriteContent(
                 modifier = Modifier.fillMaxWidth(),
                 value = description,
                 onValueChange = onDescriptionChanged,
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Unspecified,
                     unfocusedIndicatorColor = Color.Unspecified,
                     disabledIndicatorColor = Color.Unspecified,
@@ -156,6 +166,15 @@ fun WriteContent(
         ) {
             Spacer(modifier = Modifier.height(12.dp))
 
+            GalleryUploader(
+                galleryState = galleryState,
+                onAddClicked = { focusManager.clearFocus() },
+                onImageSelected = onImageSelected,
+                onImageClicked = onImageClicked
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -167,6 +186,8 @@ fun WriteContent(
                                 this.title = uiState.title
                                 this.description = uiState.description
                                 this.mood = uiState.mood.name
+                                this.images =
+                                    galleryState.images.map { it.remoteImagePath }.toRealmList()
                             }
                         )
                     } else {

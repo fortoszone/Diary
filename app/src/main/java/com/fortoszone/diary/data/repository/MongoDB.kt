@@ -4,7 +4,7 @@ import android.security.keystore.UserNotAuthenticatedException
 import android.util.Log
 import com.fortoszone.diary.model.Diary
 import com.fortoszone.diary.util.Constants.APP_ID
-import com.fortoszone.diary.util.RequestState
+import com.fortoszone.diary.model.RequestState
 import com.fortoszone.diary.util.toInstant
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query

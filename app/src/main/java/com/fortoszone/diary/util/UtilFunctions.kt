@@ -1,5 +1,9 @@
 package com.fortoszone.diary.util
 
+import android.net.Uri
+import androidx.core.net.toUri
+import com.fortoszone.diary.data.database.entity.ImageToUpload
+import com.google.firebase.storage.FirebaseStorage
 import io.realm.kotlin.types.RealmInstant
 import java.time.Instant
 
@@ -22,4 +26,40 @@ fun Instant.toRealmInstant(): RealmInstant {
     } else {
         RealmInstant.from(sec + 1, -1_000_000 + nano)
     }
+}
+
+fun fetchImagesFromFirebase(
+    remoteImagePaths: List<String>,
+    onImageDownload: (Uri) -> Unit,
+    onImageDownloadFailed: (Exception) -> Unit = {},
+    onReadyToDisplay: () -> Unit = {}
+) {
+    if (remoteImagePaths.isNotEmpty()) {
+        remoteImagePaths.forEachIndexed { index, remoteImagePath ->
+            if (remoteImagePath.trim().isNotEmpty()) {
+                FirebaseStorage.getInstance().reference.child(remoteImagePath.trim()).downloadUrl
+                    .addOnSuccessListener {
+                        onImageDownload(it)
+                        if (remoteImagePaths.lastIndexOf(remoteImagePaths.last()) == index) {
+                            onReadyToDisplay()
+                        }
+                    }
+                    .addOnFailureListener {
+                        onImageDownloadFailed(it)
+                    }
+            }
+        }
+    }
+}
+
+fun retryUploadImageToFirebase(
+    imageToUpload: ImageToUpload,
+    onSuccess: () -> Unit,
+) {
+    /*val storage = FirebaseStorage.getInstance().reference
+    storage.child(imageToUpload.remoteImagePath).putFile(
+        imageToUpload.imageUri.toUri(),
+        storageMetadata { },
+        imageToUpload.sessionUri.toUri()
+    ).addOnSuccessListener { onSuccess() }*/
 }
