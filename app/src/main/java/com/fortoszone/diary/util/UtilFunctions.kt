@@ -2,8 +2,10 @@ package com.fortoszone.diary.util
 
 import android.net.Uri
 import androidx.core.net.toUri
+import com.fortoszone.diary.data.database.entity.ImageToDelete
 import com.fortoszone.diary.data.database.entity.ImageToUpload
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storageMetadata
 import io.realm.kotlin.types.RealmInstant
 import java.time.Instant
 
@@ -52,14 +54,23 @@ fun fetchImagesFromFirebase(
     }
 }
 
-fun retryUploadImageToFirebase(
+fun retryUploadingImageToFirebase(
     imageToUpload: ImageToUpload,
-    onSuccess: () -> Unit,
+    onSuccess: () -> Unit
 ) {
-    /*val storage = FirebaseStorage.getInstance().reference
+    val storage = FirebaseStorage.getInstance().reference
     storage.child(imageToUpload.remoteImagePath).putFile(
         imageToUpload.imageUri.toUri(),
         storageMetadata { },
         imageToUpload.sessionUri.toUri()
-    ).addOnSuccessListener { onSuccess() }*/
+    ).addOnSuccessListener { onSuccess() }
+}
+
+fun retryDeletingImageFromFirebase(
+    imageToDelete: ImageToDelete,
+    onSuccess: () -> Unit
+) {
+    val storage = FirebaseStorage.getInstance().reference
+    storage.child(imageToDelete.remoteImagePath).delete()
+        .addOnSuccessListener { onSuccess() }
 }

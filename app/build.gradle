@@ -79,6 +79,7 @@ dependencies {
 
     // firebase storage
     implementation 'com.google.firebase:firebase-storage:20.2.1'
+    implementation 'com.google.firebase:firebase-storage-ktx:20.2.1'
 
     // room components
     implementation 'androidx.room:room-runtime:2.5.2'

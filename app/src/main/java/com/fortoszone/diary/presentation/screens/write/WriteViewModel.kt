@@ -7,7 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fortoszone.diary.data.database.ImageToDeleteDao
 import com.fortoszone.diary.data.database.ImageToUploadDao
+import com.fortoszone.diary.data.database.entity.ImageToDelete
 import com.fortoszone.diary.data.database.entity.ImageToUpload
 import com.fortoszone.diary.data.repository.MongoDB
 import com.fortoszone.diary.model.Diary
@@ -28,11 +30,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 import java.time.ZonedDateTime
+import javax.inject.Inject
 
 @HiltViewModel
-class WriteViewModel(
+class WriteViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val imageToUploadDao: ImageToUploadDao
+    private val imageToUploadDao: ImageToUploadDao,
+    private val imageToDeleteDao: ImageToDeleteDao
 ) : ViewModel() {
     val galleryState = GalleryState()
     var uiState by mutableStateOf(UIState())
@@ -81,6 +85,37 @@ class WriteViewModel(
                                 onImageDownloadFailed = {
 
                                 }
+                            )
+                        }
+                    }
+            }
+        }
+    }
+
+    private fun deleteImagesFromFirebase(images: List<String>? = null) {
+        val storage = FirebaseStorage.getInstance().reference
+        if (images != null) {
+            images.forEach { remotePath ->
+                storage.child(remotePath).delete()
+                    .addOnFailureListener {
+                        viewModelScope.launch(Dispatchers.IO) {
+                            imageToDeleteDao.addImageToDelete(
+                                ImageToDelete(
+                                    remoteImagePath = remotePath
+                                )
+                            )
+                        }
+                    }
+            }
+        } else {
+            galleryState.imagesToBeDeleted.map { it.remoteImagePath }.forEach { remotePath ->
+                storage.child(remotePath).delete()
+                    .addOnFailureListener {
+                        viewModelScope.launch(Dispatchers.IO) {
+                            imageToDeleteDao.addImageToDelete(
+                                ImageToDelete(
+                                    remoteImagePath = remotePath
+                                )
                             )
                         }
                     }
@@ -148,6 +183,7 @@ class WriteViewModel(
         })
         if (result is RequestState.Success) {
             uploadImagesToFirebase()
+            deleteImagesFromFirebase()
             withContext(Dispatchers.Main) {
                 onSuccess()
             }
@@ -163,6 +199,7 @@ class WriteViewModel(
             } else {
                 insertDiary(diary = diary, onSuccess = onSuccess, onError = onError)
             }
+
         }
     }
 
@@ -172,8 +209,8 @@ class WriteViewModel(
                 when (val result =
                     MongoDB.deleteDiary(diaryId = ObjectId(uiState.selectedDiaryId!!))) {
                     is RequestState.Success -> {
-
                         withContext(Dispatchers.Main) {
+                            uiState.selectedDiary?.let { deleteImagesFromFirebase(it.images) }
                             onSuccess()
                         }
                     }

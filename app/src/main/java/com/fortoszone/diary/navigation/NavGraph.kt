@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -209,7 +210,7 @@ fun NavGraphBuilder.writeRoute(
             },
         )
     ) {
-        val viewModel: WriteViewModel = viewModel()
+        val viewModel: WriteViewModel = hiltViewModel()
         val uiState = viewModel.uiState
         val pagerState = rememberPagerState()
         val pageNumber by remember { derivedStateOf { pagerState.currentPage } }
@@ -217,8 +218,8 @@ fun NavGraphBuilder.writeRoute(
         val galleryState = viewModel.galleryState
 
         WriteScreen(
+            uiState = uiState,
             onBackPressed = onBackPressed,
-            pagerState = pagerState,
             onDeleteConfirmed = {
                 viewModel.deleteDiary(
                     onSuccess = {
@@ -230,7 +231,7 @@ fun NavGraphBuilder.writeRoute(
                     }
                 )
             },
-            uiState = uiState,
+            pagerState = pagerState,
             onTitleChanged = { viewModel.setTitle(title = it) },
             onDescriptionChanged = { viewModel.setDescription(description = it) },
             moodName = { Mood.values()[pageNumber].name },
@@ -254,7 +255,7 @@ fun NavGraphBuilder.writeRoute(
                     imageType = type
                 )
             },
-            onImageClicked = {}
+            onImageDeleteClicked = { galleryState.removeImage(it) },
         )
     }
 }

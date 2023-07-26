@@ -26,5 +26,9 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideImagesDao(imagesDatabase: ImagesDatabase) = imagesDatabase.imagesToUploadDao()
+    fun provideImageToUploadDao(imagesDatabase: ImagesDatabase) = imagesDatabase.imagesToUploadDao()
+
+    @Provides
+    @Singleton
+    fun provideImageToDeleteDao(imagesDatabase: ImagesDatabase) = imagesDatabase.imageToDeleteDao()
 }
