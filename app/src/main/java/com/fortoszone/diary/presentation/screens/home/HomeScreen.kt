@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.fortoszone.diary.R
 import com.fortoszone.diary.data.repository.Diaries
 import com.fortoszone.diary.model.RequestState
+import java.time.ZonedDateTime
 
 @ExperimentalMaterial3Api
 @ExperimentalFoundationApi
@@ -53,7 +56,11 @@ fun HomeScreen(
     onNavigateToWriteScreen: () -> Unit,
     drawerState: DrawerState,
     onSignOutClicked: () -> Unit,
-    navigateToWriteWithArgs: (String) -> Unit
+    navigateToWriteWithArgs: (String) -> Unit,
+    onDeleteAllClicked: () -> Unit,
+    dateIsSelected: Boolean,
+    onDateSelected: (ZonedDateTime) -> Unit,
+    onDateReset: () -> Unit
 
 ) {
     var padding by remember {
@@ -62,13 +69,20 @@ fun HomeScreen(
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
-    NavigationDrawer(drawerState = drawerState, onSignOutClicked = onSignOutClicked) {
+    NavigationDrawer(
+        drawerState = drawerState,
+        onSignOutClicked = onSignOutClicked,
+        onDeleteAllClicked = onDeleteAllClicked
+    ) {
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 HomeTopBar(
                     scrollBehavior = scrollBehavior,
-                    onMenuClicked = onMenuClicked
+                    onMenuClicked = onMenuClicked,
+                    dateIsSelected = dateIsSelected,
+                    onDateSelected = onDateSelected,
+                    onDateReset = onDateReset
                 )
 
             },
@@ -119,6 +133,7 @@ fun HomeScreen(
 fun NavigationDrawer(
     drawerState: DrawerState,
     onSignOutClicked: () -> Unit,
+    onDeleteAllClicked: () -> Unit,
     content: @Composable () -> Unit
 
 ) {
@@ -148,12 +163,36 @@ fun NavigationDrawer(
                                     .size(24.dp)
                                     .padding(end = 12.dp),
                                 painter = painterResource(id = R.drawable.google),
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 contentDescription = stringResource(id = R.string.google_logo)
                             )
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text(text = stringResource(id = R.string.sign_out))
+                            Text(
+                                text = stringResource(id = R.string.sign_out),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }, selected = false, onClick = { onSignOutClicked() })
+
+                    NavigationDrawerItem(label = {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp)
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .padding(end = 12.dp),
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete All Icon",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = "Delete All Diaries",
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }, selected = false, onClick = { onDeleteAllClicked() })
                 }
             )
         },

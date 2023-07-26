@@ -11,6 +11,6 @@ import com.fortoszone.diary.data.database.entity.ImageToUpload
     exportSchema = false
 )
 abstract class ImagesDatabase : RoomDatabase() {
-    abstract fun imagesToUploadDao(): ImageToUploadDao
+    abstract fun imageToUploadDao(): ImageToUploadDao
     abstract fun imageToDeleteDao(): ImageToDeleteDao
 }

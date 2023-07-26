@@ -2,6 +2,7 @@ package com.fortoszone.diary.di
 
 import android.content.Context
 import androidx.room.Room
+import com.fortoszone.diary.connectivity.NetworkConnectivityObserver
 import com.fortoszone.diary.data.database.ImagesDatabase
 import com.fortoszone.diary.util.Constants.IMAGES_DATABASE
 import dagger.Module
@@ -16,19 +17,29 @@ import javax.inject.Singleton
 object DatabaseModule {
     @Provides
     @Singleton
-    fun provideImagesDatabase(@ApplicationContext context: Context): ImagesDatabase {
+    fun provideDatabase(
+        @ApplicationContext context: Context
+    ): ImagesDatabase {
         return Room.databaseBuilder(
-            context,
-            ImagesDatabase::class.java,
-            IMAGES_DATABASE
-        ).build()
+            context = context,
+            klass = ImagesDatabase::class.java,
+            name = IMAGES_DATABASE
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
-    @Provides
     @Singleton
-    fun provideImageToUploadDao(imagesDatabase: ImagesDatabase) = imagesDatabase.imagesToUploadDao()
+    @Provides
+    fun provideImageToUploadDao(database: ImagesDatabase) = database.imageToUploadDao()
 
-    @Provides
     @Singleton
-    fun provideImageToDeleteDao(imagesDatabase: ImagesDatabase) = imagesDatabase.imageToDeleteDao()
+    @Provides
+    fun provideImageToDeleteDao(database: ImagesDatabase) = database.imageToDeleteDao()
+
+    @Singleton
+    @Provides
+    fun provideNetworkConnectivityObserver(
+        @ApplicationContext context: Context
+    ) = NetworkConnectivityObserver(context = context)
 }

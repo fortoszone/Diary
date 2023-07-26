@@ -142,13 +142,17 @@ fun NavGraphBuilder.homeRoute(
     onDataLoaded: () -> Unit
 ) {
     composable(route = Screen.Home.route) {
-        val viewModel: HomeViewModel = viewModel()
+        val viewModel: HomeViewModel = hiltViewModel()
         val diaries by viewModel.diaries
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
         var onSignOutDialogOpened by remember {
             mutableStateOf(false)
         }
+        var deleteAllDialogOpened by remember {
+            mutableStateOf(false)
+        }
+        val context = LocalContext.current
 
         LaunchedEffect(key1 = diaries) {
             if (diaries !is RequestState.Loading) {
@@ -171,6 +175,16 @@ fun NavGraphBuilder.homeRoute(
             },
             diaries = diaries,
             navigateToWriteWithArgs = navigateToWriteWithArgs,
+            onDeleteAllClicked = {
+                deleteAllDialogOpened = true
+            },
+            dateIsSelected = viewModel.dateIsSelected,
+            onDateSelected = { zonedDateTime ->
+                viewModel.getDiaries(zonedDateTime = zonedDateTime)
+            },
+            onDateReset = {
+                viewModel.getDiaries()
+            },
         )
 
         LaunchedEffect(key1 = Unit) {
@@ -192,6 +206,30 @@ fun NavGraphBuilder.homeRoute(
                         }
                     }
                 }
+            })
+
+        DisplayAlertDialog(
+            title = "Delete All Diaries",
+            message = "Are you sure?",
+            dialogOpened = deleteAllDialogOpened,
+            onCloseDialog = { deleteAllDialogOpened = false },
+            onYesClicked = {
+                viewModel.deleteAllDiaries(
+                    onSuccess = {
+                        Toast.makeText(context, "All diaries deleted", Toast.LENGTH_SHORT).show()
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    },
+                    onError = {
+                        Toast.makeText(
+                            context,
+                            if (it.message == "No internet connection.") "We need an internet connection for this operation" else it.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                )
+
             })
     }
 }
