@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="Theme.Diary.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">?android:attr/colorBackground</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/book_splash</item>
         <item name="postSplashScreenTheme">@style/Theme.Diary</item>
-        <item name="android:windowSplashScreenBrandingImage">@drawable/branding_dark</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/branding_light</item>
     </style>
 </resources>

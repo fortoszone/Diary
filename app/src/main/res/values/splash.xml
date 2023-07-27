@@ -3,7 +3,8 @@
 
     <style name="Theme.Diary.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">?android:attr/colorBackground</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/book</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/book_splash</item>
         <item name="postSplashScreenTheme">@style/Theme.Diary</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/branding_light</item>
     </style>
 </resources>
