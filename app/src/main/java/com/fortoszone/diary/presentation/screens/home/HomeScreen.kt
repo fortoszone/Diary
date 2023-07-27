@@ -160,7 +160,7 @@ fun NavigationDrawer(
                         ) {
                             Icon(
                                 modifier = Modifier
-                                    .size(24.dp)
+                                    .size(32.dp)
                                     .padding(end = 12.dp),
                                 painter = painterResource(id = R.drawable.google),
                                 tint = MaterialTheme.colorScheme.onSurface,
@@ -180,7 +180,7 @@ fun NavigationDrawer(
                         ) {
                             Icon(
                                 modifier = Modifier
-                                    .size(24.dp)
+                                    .size(32.dp)
                                     .padding(end = 12.dp),
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete All Icon",

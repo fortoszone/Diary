@@ -1,6 +1,5 @@
 package com.fortoszone.diary.presentation.screens.auth
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,11 +12,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.fortoszone.diary.R
+import com.fortoszone.diary.presentation.components.BookAnim
 import com.fortoszone.diary.presentation.components.GoogleButton
 
 @Composable
@@ -43,14 +42,10 @@ fun AuthenticationContent(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    modifier = Modifier.size(120.dp),
-                    painter = painterResource(id = R.drawable.book),
-                    contentDescription = stringResource(R.string.google_logo)
-                )
+                BookAnim(modifier = Modifier.size(180.dp))
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
-                    text = stringResource(R.string.auth_title),
+                    text = "Welcome to Gallery",
                     style = TextStyle(
                         fontSize = MaterialTheme.typography.titleLarge.fontSize
                     )
