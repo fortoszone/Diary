@@ -160,11 +160,10 @@ fun NavigationDrawer(
                         ) {
                             Icon(
                                 modifier = Modifier
-                                    .size(32.dp)
                                     .padding(end = 12.dp),
-                                painter = painterResource(id = R.drawable.google),
+                                painter = painterResource(id = R.drawable.baseline_logout_24),
                                 tint = MaterialTheme.colorScheme.onSurface,
-                                contentDescription = stringResource(id = R.string.google_logo)
+                                contentDescription = "Logout logo"
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
@@ -180,7 +179,6 @@ fun NavigationDrawer(
                         ) {
                             Icon(
                                 modifier = Modifier
-                                    .size(32.dp)
                                     .padding(end = 12.dp),
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete All Icon",
